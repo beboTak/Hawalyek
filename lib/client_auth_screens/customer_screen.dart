@@ -1,16 +1,10 @@
 import 'dart:async';
-
-import 'package:firstapp/craft_auth_screens/validation_code.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/user_provider.dart';
-import 'client_validation_screen.dart';
 import 'dart:ui' as ui;
-
-import 'customer_location_screen.dart';
-import 'image_profile_screen.dart';
+import 'customer_image_profile_screen.dart';
 
 class CustomerScreen extends StatefulWidget {
   static const routeName = "customer_screen";
@@ -21,19 +15,45 @@ class CustomerScreen extends StatefulWidget {
 }
 
 class _CustomerScreenState extends State<CustomerScreen> {
-  var _Provider;
+  late UserProvider _Provider;
+  late String _formattedDate;
   final TextEditingController _dateController = TextEditingController();
   final List<String> _genders = ['ذكر', 'أنثى'];
   final _formKey = GlobalKey<FormState>();
-  Future<void> _selectDate() async {
+
+  @override
+  void initState() {
+    super.initState();
+    _formattedDate = '';
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
     DateTime? _picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1960),
-        lastDate: DateTime(2100));
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
     if (_picked != null) {
-      _Provider.birthDate = _picked.toString().split(" ")[0];
-      _dateController.text = _picked.toString().split(" ")[0];
+      TimeOfDay? _pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (_pickedTime != null) {
+        DateTime dateTime = DateTime(
+          _picked.year,
+          _picked.month,
+          _picked.day,
+          _pickedTime.hour,
+          _pickedTime.minute,
+        );
+        DateFormat dateFormat = DateFormat("M/d/yyyy hh:mm:ss a");
+        setState(() {
+          _formattedDate = dateFormat.format(dateTime);
+          _dateController.text = _formattedDate;
+        });
+        _Provider.birthDate = _formattedDate; // Save the formatted date in the provider
+      }
     }
   }
 
@@ -64,8 +84,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: ui.TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -181,7 +202,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: const Color(0xffe2dcdc),
-                          hintText: 'ادخل تاريخ الميلاد',
+                          hintText: 'ادخل تاريخ ميلادك',
                           prefixIcon: const Icon(Icons.calendar_today),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -190,7 +211,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         ),
                         readOnly: true,
                         onTap: () {
-                          _selectDate();
+                          _selectDate(context);
                         },
                         keyboardType:
                             TextInputType.datetime, // تحديد نوع الإدخال
@@ -203,7 +224,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                           return null;
                         },
                         onSaved: (val) {
-                          _Provider.birthDate = val!.trim().toString();
+                          _Provider.birthDate = _dateController.text.trim().toString();
                         },
                       ),
                     ),

@@ -19,7 +19,7 @@ class UserProvider extends ChangeNotifier {
   dynamic? _profilePic;
   bool _showPassword = true;
   bool _loadImage = false;
-  Uint8List ? _showPImage;
+  Uint8List ? _profilePicBytes;
   // Getters
   String get firstName => _firstName;
   String get lastName => _lastName;
@@ -34,7 +34,7 @@ class UserProvider extends ChangeNotifier {
   String? get birthDate => _birthDate;
   bool get showPassword => _showPassword;
   bool get loadImage=> _loadImage;
-  Uint8List? get showPImage=>_showPImage;
+
   // Setters
   set firstName(String value) {
     _firstName = value;
@@ -106,15 +106,10 @@ class UserProvider extends ChangeNotifier {
       final ImagePicker _picker = ImagePicker();
       var image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        // Convert the image to bytes
         final File file = File(image.path);
         List<int> imageBytes = await file.readAsBytes();
-        _profilePic = imageBytes;
-        String base64Image = base64Encode(imageBytes);
-        _showPImage = Uint8List.fromList(imageBytes);
-        // _profilePic = base64Image;
-        notifyListeners();
-
+        _profilePicBytes = Uint8List.fromList(imageBytes);
+        notifyListeners(); // Assuming you have a method to notify listeners
         return true; // Image upload successful
       } else {
         return false; // No image selected
@@ -125,9 +120,9 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Function to get the temporarily stored profile picture
-  dynamic? getTempProfilePicture() {
-    return _profilePic;
+  // Function to get the temporarily stored profile picture bytes
+  Uint8List? getTempProfilePicture() {
+    return _profilePicBytes;
   }
 
 }

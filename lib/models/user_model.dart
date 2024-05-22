@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 class UserProfile {
   String firstName;
@@ -12,7 +12,7 @@ class UserProfile {
   String city;
   String street;
   String? birthDate;
-  dynamic profilePic;
+  Uint8List? profilePicBytes; // Changed to Uint8List for image bytes
 
   UserProfile({
     required this.firstName,
@@ -26,8 +26,6 @@ class UserProfile {
     required this.password,
     this.passwordConfirmed,
     this.birthDate,
-    this.profilePic,
+    this.profilePicBytes,
   });
-
-
 }

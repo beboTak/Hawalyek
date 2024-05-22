@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class ValidationCode extends StatelessWidget {
   const ValidationCode({Key? key});
-  static const routeName = 'validation_code';
+  static const routeName = 'craft_validation_code';
 
   @override
   Widget build(BuildContext context) {

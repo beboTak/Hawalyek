@@ -1,7 +1,7 @@
 import 'package:firstapp/models/order_model.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/craft_model.dart';
+import '../../models/craft_data_model.dart';
 
 class OrderPage extends StatelessWidget {
   Craft craft;

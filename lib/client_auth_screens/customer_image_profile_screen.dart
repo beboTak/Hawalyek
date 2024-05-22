@@ -81,7 +81,7 @@ class ImageProfileScreen extends StatelessWidget {
                     ),
                     child: ClipOval(
                       child: Image.memory(
-                        userProvider.showPImage! ,
+                        userProvider.getTempProfilePicture()! ,
                         fit: BoxFit.cover,
                       ),
                     ),

@@ -1,20 +1,46 @@
-import 'package:firstapp/auth_screen/signin_screen.dart';
-
-import 'package:firstapp/craft_auth_screens/information_screen.dart';
+import 'package:firstapp/craft_auth_screens/validation_code.dart';
 import 'package:flutter/material.dart';
-import '../auth_screen/login_screen.dart';
-import 'data_screen.dart';
+import 'package:provider/provider.dart';
+import '../Back_end/back_service.dart';
+import '../models/craft_model.dart';
+import '../providers/craft_provider.dart';
 
-class ContactScreen extends StatelessWidget {
+class ContactScreen extends StatefulWidget {
   static const routeName = "contact_screen";
+
+  @override
+  State<ContactScreen> createState() => _ContactScreenState();
+}
+
+class _ContactScreenState extends State<ContactScreen> {
+ var _Provider;
+  CraftProfile? _user;
+  final BackendService _backendService = BackendService();
+  final _formKey = GlobalKey<FormState>();
+
+  bool _validateAndProceed() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  void didChangeDependencies() {
+    _Provider = Provider.of<CraftProvider>(context, listen: true);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Color(0xff4c3f7a),
+          backgroundColor: Colors.white,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, color: Colors.grey),
             onPressed: () {
@@ -27,110 +53,225 @@ class ContactScreen extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.only(left: 8, right: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color(0xff4c3f7a),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(left: 8, right: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: const Color(0xff4c3f7a),
+                      ),
+                      child: Image.asset(
+                        'image/sign.png',
+                        fit: BoxFit.contain,
+                        height: 230,
+                        width: double.infinity,
+                      ),
                     ),
-                    child: Image.asset(
-                      'image/sign.png',
-                      fit: BoxFit.contain,
-                      height: 230,
-                      width: double.infinity,
+                    const SizedBox(
+                      height: 5,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8, right: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        CircleAvatar(
-                          radius: 25, // Set the radius of the circular image
-                          backgroundImage:
-                          AssetImage("image/logo2.png"), // URL of the image
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8, right: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          CircleAvatar(
+                            radius: 25, // Set the radius of the circular image
+                            backgroundImage: AssetImage(
+                                "image/logo2.png"), // URL of the image
+                          ),
+                          SizedBox(
+                              width:
+                              10), // Add some space between the image and text
+                          Text(
+                            'حواليك', // Text to display
+                            style: TextStyle(
+                                color: Color(0xff4c3f7a),
+                                fontSize: 25), // Set the font size of the text
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xffe2dcdc),
+                          hintText: 'ادخل اسم المستخدم',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
-                        SizedBox(
-                            width:
-                            10), // Add some space between the image and text
-                        Text(
-                          'حواليك', // Text to display
-                          style: TextStyle(
-                              color: Color(0xff4c3f7a),
-                              fontSize: 25), // Set the font size of the text
-                        ),
-                      ],
+                        keyboardType: TextInputType.name,
+                        validator: (value) {
+                          if (value == null || value.isEmpty || value == " ") {
+                            return 'الرجاء إدخال اسم المستخدم';
+                          }
+                          return null;
+                        },
+                        onSaved: (val) {
+                          _Provider!.userName = val!.trim().toString();
+                        },
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xffe2dcdc),
+                          hintText: 'ادخل رقم الهاتف',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.length < 11) {
+                            return 'الرجاء إدخل رقم الهاتف صحيح';
+                          }
+                          return null;
+                        },
+                        onSaved: (val) {
+                          _Provider.phoneNumber = val!.trim().toString();
+                          print(_Provider.phoneNumber);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: TextFormField(
+                        obscureText: _Provider.showPassword,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xffe2dcdc),
+                          hintText: 'ادخل كلمة المرور',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.visiblePassword,
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value == " " ||
+                              value.length < 6) {
+                            return 'الرجاء إدخال كلمة مرور قوية';
+                          }
+                          _Provider.password = value.trim().toString();
+                          return null;
+                        },
+                        onSaved: (val) {
+                          _Provider.password = val!.trim().toString();
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: TextFormField(
+                        obscureText: _Provider.showPassword,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xffe2dcdc),
+                          hintText: 'تأكيد كلمة المرور',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          print(_Provider.password);
 
-                  const SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xffe2dcdc),
-                        hintText: 'ادخل كلمة السر',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                          if (value!.trim().toString() != _Provider.password) {
+                            return 'كلمة مرور غير متطابقة';
+                          }
+                          _Provider.passwordConfirmed = value.trim().toString();
+                          return null;
+                        },
+                        onSaved: (val) {
+                          _Provider.passwordConfirmed = val!.trim().toString();
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 46.0),
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: TextButton(
+                          style:
+                          const ButtonStyle(alignment: Alignment.topRight),
+                          onPressed: () {
+                            _Provider.showPassword = !(_Provider.showPassword);
+                          },
+                          child: const Text(
+                            "عرض كلمة المرور",
+                            style:
+                            TextStyle(fontSize: 17, color: Colors.black54),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xffe2dcdc),
-                        hintText: 'تأكيد كلمة السر',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        var done = _validateAndProceed();
+                        if (done) {
+                          _user = CraftProfile(
+                              firstName: _Provider.firstName,
+                              lastName: _Provider.lastName,
+                              userName: _Provider.userName,
+                              gender: _Provider.gender,
+                              phoneNumber: _Provider.phoneNumber,
+                              governorate: _Provider.governorate,
+                              city: _Provider.city,
+                              street: _Provider.street,
+                              password: _Provider.password,
+                              passwordConfirmed: _Provider.passwordConfirmed,
+                              birthDate: _Provider.birthDate,
+                              profilePicBytes: _Provider.profilePicBytes,
+                              personalImageBytes:_Provider.personalImageBytes,
+                              nationalIdImageBytes:_Provider.nationalIdImageBytes,
+                              craftName: _Provider.craftName,
+                          );
+                          var done = await _backendService.registerCraftsman(_user!);
+                          if (done['success'] == true) {
+                            Navigator.of(context).pushNamed(ValidationCode.routeName);
+                          }
+                          else {
+                            print('Failed to register user. Status code: ${done['statusCode']}');
+                            print('Response body: ${done['response']}');
+                          }
+
+
+                          // Navigator.of(context).pushNamed(LoginScreen.routeName);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xff4c3f7a),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 125, vertical: 10),
                       ),
+                      child: const Text('انشاء'),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 46.0),
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      child: TextButton(
-                        style: ButtonStyle(alignment: Alignment.topRight),
-                        onPressed: () {},
-                        child: const Text(
-                          "عرض كلمة المرور",
-                          style: TextStyle(fontSize: 17, color: Colors.black54),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(LoginScreen.routeName);
-                      // Handle sign-in logic
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color(0xff4c3f7a),
-                      shape: const StadiumBorder(),
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 125, vertical: 10),
-                    ),
-                    child: const Text('انشاء'),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

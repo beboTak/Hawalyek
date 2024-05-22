@@ -2,7 +2,7 @@ import 'package:firstapp/Base_screens/client/crafts_gallery_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/craft_data.dart';
-import '../../models/craft_model.dart';
+import '../../models/craft_data_model.dart';
 import 'client_order_screen.dart';
 
 class GalleryBaseScreen extends StatefulWidget {

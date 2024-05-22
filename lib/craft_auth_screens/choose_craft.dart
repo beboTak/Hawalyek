@@ -1,5 +1,10 @@
-import 'package:firstapp/craft_auth_screens/contact_screen.dart';
+import 'package:firstapp/craft_auth_screens/craft_result_screen.dart';
+import 'package:firstapp/providers/craft_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'dart:ui' as ui;
+
+import '../Back_end/back_service.dart';
 
 class ChooseCraft extends StatefulWidget {
   static const routeName = 'choose_craft';
@@ -9,185 +14,144 @@ class ChooseCraft extends StatefulWidget {
 }
 
 class _ChooseCraftState extends State<ChooseCraft> {
-  List<bool> isSelected = List.generate(21, (index) => false);
-  int? selectedCraft;
+  var _CraftsProvider;
+  final _backendService = BackendService();
+  List<String> crafts =[] ;
+  Future<void> _loadCraftsData() async {
+
+    try {
+      crafts = await _backendService.getCraftsNames();
+      _CraftsProvider.crafts = crafts;
+      _CraftsProvider.craftName= crafts[0];
+      print("Initial craft: " + crafts[0]);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading crafts: $e')));
+      print('Error loading crafts: $e');
+    }
+  }
+
+@override
+  void initState() {
+    _loadCraftsData();
+    super.initState();
+  }
+  @override
+  void didChangeDependencies() {
+    _CraftsProvider = Provider.of<CraftProvider>(context, listen: true);
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xff4c3f7a),
-        title: const Text('اختار حرفتك'),
-
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.grey),
-          onPressed: () {
-            Navigator.of(context).pop();
-            // Handle back button press
-          },
-        ),
-        elevation: 0,
-      ),
-
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: isSelected.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-        ),
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                if (selectedCraft == index) {
-                  // Unselect the craft if it's already selected
-                  selectedCraft = null;
-                } else {
-                  // Select the craft
-                  selectedCraft = index;
-                }
-              });
+    var  _CraftsProvider = Provider.of<CraftProvider>(context, listen: true);
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xff4c3f7a),
+          title: const Text('اختار حرفتك'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.grey),
+            onPressed: () {
+              Navigator.of(context).pop();
             },
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: selectedCraft == index ? Colors.deepPurple : Colors.transparent,
-                  width: 2,
+          ),
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 8, right: 8, top: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: const Color(0xff4c3f7a),
                 ),
-                color: selectedCraft == index ? Colors.deepPurple[200] : Colors.transparent,
+                child: Image.asset(
+                  'image/sign.png',
+                  fit: BoxFit.contain,
+                  height: 230,
+                  width: double.infinity,
+                ),
               ),
-              child: Center(
-                child: Text(
-                  [
-                    'سباك',
-                    'نجار',
-                    'نقاش',
-                    'رسام حائط',
-                    'طباخ منزل',
-                    'كهربائي',
-                    'كهربائي اجهزه',
-                    'ممرض',
-                    'حرفي صناعه يدوية',
-                    'ميكانيكي',
-                    'عامل سيراميك',
-                    'عامل نظافه',
-                    'فني مكن خياطة',
-                    'خياطه',
-                    'مبيض محاره',
-                    'لحام',
-                    'حداد',
-                    'فني تكيف وتبريد',
-                    'صناعي المونتال',
-                    'عامل زجاج',
-                    'مصور',
-                  ][index],
-                  style: TextStyle(
-                    color: selectedCraft == index ? Colors.white : Colors.black,
-                    fontSize: 20,
+              const SizedBox(height: 5),
+              const Padding(
+                padding: EdgeInsets.only(top: 8, right: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: AssetImage("image/logo2.png"),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      'حواليك',
+                      style: TextStyle(color: Color(0xff4c3f7a), fontSize: 25),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                alignment: Alignment.topRight,
+                child: const Text(
+                  'اختر حرفتك:',
+                  style: TextStyle(fontSize: 22),
+                  textDirection: TextDirection.rtl,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.only(left: 18, right: 18),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButton<String>(
+                    value: _CraftsProvider.craftName,
+                    style: const TextStyle(color: Colors.black, fontSize: 18),
+                    alignment: Alignment.topRight,
+                    isExpanded: true,
+                    underline: Container(),
+                    items: _CraftsProvider.crafts.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      _CraftsProvider.craftName = newValue!.trim();
+                    },
+                    icon: const Icon(Icons.arrow_drop_down),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (selectedCraft != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NextPage(selectedCraft: selectedCraft!),
-              ),
-            );
-          }
-        },
-        child: const Icon(Icons.arrow_forward),
-        backgroundColor: const Color(0xff4c3f7a),
-      ),
-    );
-  }
-}
-
-class NextPage extends StatelessWidget {
-  final int selectedCraft;
-
-  NextPage({required this.selectedCraft});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xff4c3f7a),
-        title: const Text(''),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              ':مهنتك هي',
-              style: TextStyle(
-                fontSize: 26,
-                color: Color(0xff4c3f7a),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: 150,
-              height: 90,
-              decoration: BoxDecoration(
-                color: Colors.deepPurple[200],
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Center(
-                child: Text(
-                  [
-                    'سباك',
-                    'نجار',
-                    'نقاش',
-                    'رسام حائط',
-                    'طباخ منزل',
-                    'كهربائي',
-                    'كهربائي اجهزه',
-                    'ممرض',
-                    'حرفي صناعه يدوية',
-                    'ميكانيكي',
-                    'عامل سيراميك',
-                    'عامل نظافة',
-                    'فني مكن خياطة',
-                    'خياطة',
-                    'مبيض محارة',
-                    'لحام',
-                    'حداد',
-                    'فني تكييف وتبريد',
-                    'صناعي المونتال',
-                    'عامل زجاج',
-                    'مصور',
-                  ][selectedCraft],
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(ContactScreen.routeName);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff4c3f7a),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
-              ),
-              child: const Text('نعم'),
-            ),
-          ],
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (_CraftsProvider.craftName != ' ' &&
+                _CraftsProvider.craftName.trim().isNotEmpty) {
+              print(_CraftsProvider.craftName);
+              Navigator.of(context).pushNamed(ResultCraftScreen.routeName);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                "الرجاء قم باختيار حرفتك",
+                textDirection: ui.TextDirection.rtl,
+              )));
+            }
+          },
+          child: const Icon(Icons.arrow_forward,color: Colors.white,),
+          backgroundColor: const Color(0xff4c3f7a),
         ),
       ),
     );

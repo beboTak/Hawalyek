@@ -1,128 +1,79 @@
-class Craft {
-  final String imagePath;
-  final String text;
-  final String filteredText;
+import 'dart:typed_data';
 
-  Craft({
-    required this.imagePath,
-    required this.text,
-    required this.filteredText,
+class CraftProfile {
+  String firstName;
+  String lastName;
+  String userName;
+  String phoneNumber;
+  String password;
+  String? passwordConfirmed;
+  String craftName;
+  int gender;
+  String? birthDate;
+  Uint8List? profilePicBytes;
+  String governorate;
+  String city;
+  String street;
+  Uint8List? personalImageBytes;
+  Uint8List? nationalIdImageBytes;
+
+  CraftProfile({
+    required this.firstName,
+    required this.lastName,
+    required this.userName,
+    required this.phoneNumber,
+    required this.password,
+    this.passwordConfirmed,
+    required this.craftName,
+    required this.gender,
+    this.birthDate,
+    this.profilePicBytes,
+    required this.governorate,
+    required this.city,
+    required this.street,
+    this.personalImageBytes,
+    this.nationalIdImageBytes,
   });
+
+  // Convert CraftProfile to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'firstName': firstName,
+      'lastName': lastName,
+      'userName': userName,
+      'phoneNumber': phoneNumber,
+      'password': password,
+      'passwordConfirmed': passwordConfirmed,
+      'craftName': craftName,
+      'gender': gender,
+      'birthDate': birthDate,
+      'profilePicBytes': profilePicBytes != null ? profilePicBytes!.toList() : null,
+      'governorate': governorate,
+      'city': city,
+      'street': street,
+      'personalImageBytes': personalImageBytes != null ? personalImageBytes!.toList() : null,
+      'nationalIdImageBytes': nationalIdImageBytes != null ? nationalIdImageBytes!.toList() : null,
+    };
+  }
+
+  // Create CraftProfile from JSON
+  factory CraftProfile.fromJson(Map<String, dynamic> json) {
+    return CraftProfile(
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      userName: json['userName'],
+      phoneNumber: json['phoneNumber'],
+      password: json['password'],
+      passwordConfirmed: json['passwordConfirmed'],
+      craftName: json['craftName'],
+      gender: json['gender'],
+      birthDate: json['birthDate'],
+      profilePicBytes: json['profilePicBytes'] != null ? Uint8List.fromList(List<int>.from(json['profilePicBytes'])) : null,
+      governorate: json['governorate'],
+      city: json['city'],
+      street: json['street'],
+      personalImageBytes: json['personalImageBytes'] != null ? Uint8List.fromList(List<int>.from(json['personalImageBytes'])) : null,
+      nationalIdImageBytes: json['nationalIdImageBytes'] != null ? Uint8List.fromList(List<int>.from(json['nationalIdImageBytes'])) : null,
+    );
+  }
 }
-List<Craft> crafts = [
-  Craft(
-    imagePath: 'image/wallpaper (1).png',
-    text: 'نقاش',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/wallpaper.png',
-    text: 'رسام حائط',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/plumber.png',
-    text: 'سباك',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/carpenter.png',
-    text: 'نجار',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/electrician.png',
-    text: 'كهربائي',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/soldering-iron.png',
-    text: 'كهريائي أجهزة',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/mechanic.png',
-    text: 'ميكانيكي',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/cooking.png',
-    text: 'طباخ منزلي',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/nurse.png',
-    text: 'ممرض',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/artisanal.png',
-    text: 'حرقي صناعة يدوية',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/disinfection.png',
-    text: 'عامل نظافة',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/sewing.png',
-    text: 'فني مكن خياطة',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/blacksmith.png',
-    text: 'حداد',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/worker.png',
-    text: 'عامل سيراميك',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/paint.png',
-    text: 'مبيض محارة',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/construction.png',
-    text: 'لحام',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/delivery.png',
-    text: 'عامل توصيل',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/sewing2.png',
-    text: 'خياطه',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/air-conditioner.png',
-    text: 'فني تكييف وتبريد',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/carpenter2.png',
-    text: 'نجار مسلح',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/glass.png',
-    text: 'عامل زجاج',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/photographer.png',
-    text: 'مصور',
-    filteredText: '',
-  ),
-  Craft(
-    imagePath: 'image/water-jet.png',
-    text: 'صنايعي المونتتال',
-    filteredText: '',
-  ),
-];

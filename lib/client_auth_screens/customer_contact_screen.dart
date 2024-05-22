@@ -90,7 +90,7 @@ class _CustomerContactState extends State<CustomerContact> {
                           ),
                           SizedBox(
                               width:
-                                  10), // Add some space between the image and text
+                              10), // Add some space between the image and text
                           Text(
                             'حواليك', // Text to display
                             style: TextStyle(
@@ -218,14 +218,14 @@ class _CustomerContactState extends State<CustomerContact> {
                         alignment: Alignment.topRight,
                         child: TextButton(
                           style:
-                              const ButtonStyle(alignment: Alignment.topRight),
+                          const ButtonStyle(alignment: Alignment.topRight),
                           onPressed: () {
                             _Provider.showPassword = !(_Provider.showPassword);
                           },
                           child: const Text(
                             "عرض كلمة المرور",
                             style:
-                                TextStyle(fontSize: 17, color: Colors.black54),
+                            TextStyle(fontSize: 17, color: Colors.black54),
                           ),
                         ),
                       ),
@@ -247,11 +247,14 @@ class _CustomerContactState extends State<CustomerContact> {
                               password: _Provider.password,
                               passwordConfirmed: _Provider.passwordConfirmed,
                               birthDate: _Provider.birthDate,
-                              profilePic: _Provider.getTempProfilePicture());
+                              profilePicBytes: _Provider.getTempProfilePicture());
                           var done = await _backendService.registerUser(_user!);
-                          if (done) {
-                            Navigator.of(context)
-                                .pushNamed(CustomerValidationCode.routeName);
+                          if (done['success'] == true) {
+                            Navigator.of(context).pushNamed(CustomerValidationCode.routeName);
+                          }
+                          else {
+                            print('Failed to register user. Status code: ${done['statusCode']}');
+                            print('Response body: ${done['response']}');
                           }
 
 
